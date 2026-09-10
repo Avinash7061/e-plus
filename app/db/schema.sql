@@ -134,4 +134,4 @@ CREATE INDEX IF NOT EXISTS idx_alerts_user_id
 ON alerts(user_id);
 
 CREATE INDEX IF NOT EXISTS idx_alerts_status
-ON alerts(status);-- [PASTE THE FULL SQL FROM SECTION 4 OF YOUR ARCHITECTURE DOC HERE]
+ON alerts(status);
