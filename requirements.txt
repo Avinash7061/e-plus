@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+supabase
+pydantic
+pydantic-settings
+python-jose
+passlib
+apscheduler
+twilio
+firebase-admin
+scikit-learn
+joblib
+requests
