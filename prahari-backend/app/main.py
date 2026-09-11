@@ -3,6 +3,8 @@ from app.routers import auth, users, ingestion, risk
 from app.routers import alerts
 from contextlib import asynccontextmanager
 from app.jobs.scheduler import start_scheduler, shutdown_scheduler
+from app.routers import eeg
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -16,6 +18,8 @@ app.include_router(users.router)
 app.include_router(ingestion.router)
 app.include_router(risk.router)
 app.include_router(alerts.router)
+app.include_router(eeg.router)
+
 
 @app.get("/")
 def health_check():
