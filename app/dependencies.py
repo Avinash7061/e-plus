@@ -1,6 +1,7 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from supabase import Client
+
 from app.core.security import decode_access_token
 from app.core.supabase_client import get_supabase
 
