@@ -9,7 +9,15 @@ mock_supabase = MagicMock()
 def override_get_supabase():
     return mock_supabase
 
-app.dependency_overrides[get_supabase] = override_get_supabase
+@pytest.fixture(autouse=True)
+def setup_overrides():
+    old = app.dependency_overrides.get(get_supabase)
+    app.dependency_overrides[get_supabase] = override_get_supabase
+    yield
+    if old:
+        app.dependency_overrides[get_supabase] = old
+    else:
+        del app.dependency_overrides[get_supabase]
 
 client = TestClient(app)
 

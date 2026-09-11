@@ -3,4 +3,4 @@ from app.config import settings
 
 def get_supabase() -> Client:
     """Returns a Supabase client using settings from config.py"""
-    return create_client(settings.SUPABASE_URL, settings.SUPABASE_KEY)
+    return create_client(settings.supabase_url, settings.supabase_key)
