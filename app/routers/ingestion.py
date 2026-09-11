@@ -34,6 +34,26 @@ async def ingest_biometrics(
         inserted_count = len(inserted_rows)
         reading_ids = [row["id"] for row in inserted_rows]
         
+        # Compute risk score with the most recent reading (the last one in the batch)
+        # TODO: Need user's location_lat/location_lng to fetch environmental data, using None for now
+        latest_reading = insert_data[-1]
+        try:
+            from app.services.risk_engine import compute_risk_score
+            import logging
+            
+            risk_result = compute_risk_score(latest_reading, environmental=None)
+            
+            # Insert risk score
+            risk_insert_data = {
+                "user_id": user_id,
+                "score": risk_result["score"],
+                "risk_level": risk_result["risk_level"],
+                "contributing_factors": risk_result["contributing_factors"]
+            }
+            db.table("risk_scores").insert(risk_insert_data).execute()
+        except Exception as e:
+            logging.error(f"Failed to compute or store risk score: {str(e)}")
+        
         return BiometricBatchResponse(
             inserted_count=inserted_count,
             reading_ids=reading_ids
