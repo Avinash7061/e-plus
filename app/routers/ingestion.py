@@ -35,13 +35,30 @@ async def ingest_biometrics(
         reading_ids = [row["id"] for row in inserted_rows]
         
         # Compute risk score with the most recent reading (the last one in the batch)
-        # TODO: Need user's location_lat/location_lng to fetch environmental data, using None for now
         latest_reading = insert_data[-1]
         try:
             from app.services.risk_engine import compute_risk_score
             import logging
-            
-            risk_result = compute_risk_score(latest_reading, environmental=None)
+
+            environmental_data = None
+            try:
+                user_row = db.table("users").select("region").eq("id", user_id).execute()
+                if user_row.data and user_row.data[0].get("region"):
+                    region = user_row.data[0]["region"]
+                    env_row = (
+                        db.table("environmental_readings")
+                        .select("*")
+                        .eq("region", region)
+                        .order("recorded_at", desc=True)
+                        .limit(1)
+                        .execute()
+                    )
+                    if env_row.data:
+                        environmental_data = env_row.data[0]
+            except Exception as env_lookup_error:
+                logging.error(f"Failed to fetch environmental data: {env_lookup_error}")
+
+            risk_result = compute_risk_score(latest_reading, environmental=environmental_data)
             
             # Insert risk score
             risk_insert_data = {
